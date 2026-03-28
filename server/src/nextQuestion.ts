@@ -1,6 +1,6 @@
+import { completeQuestion } from "./completeQuestion";
 import gameState from "./gameState";
 import { ExtendedWebSocket, Game, Player } from "./types";
-import { createTimerFn } from "./utils/createTimerFn";
 import { formatQuestion } from "./utils/formatQuestion";
 
 export const nextQuestion = (
@@ -16,7 +16,9 @@ export const nextQuestion = (
     status: "in_progress",
     questionStartTime: new Date(),
     questionTimer: setTimeout(
-      createTimerFn(game.id, allConn),
+      () => {
+        completeQuestion(gameId, allConn);
+      },
       game.questions[game.currentQuestion + 1].timeLimitSec,
     ),
   };
