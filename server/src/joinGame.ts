@@ -1,0 +1,58 @@
+import { JoinGameData, ExtendedWebSocket, Player } from "./types";
+import registeredClientsState from "./registeredClientsState.js";
+import gameState from "./gameState";
+
+export const handleJoinGame = (
+  { code }: JoinGameData,
+  conn: ExtendedWebSocket,
+  allConn: Set<ExtendedWebSocket>,
+) => {
+  const registeredClient = registeredClientsState.getByConnectionId(conn.id);
+  const game = gameState.getByCode(code);
+
+  const player: Player = {
+    name: registeredClient.name,
+    index: conn.id,
+    score: 0,
+  };
+
+  const updatedGame = gameState.update(game.id, {
+    ...game,
+    players: [...game.players, player],
+  });
+
+  conn.send(
+    JSON.stringify({
+      type: "game_joined",
+      data: {
+        gameId: game.id,
+      },
+      id: 0,
+    }),
+  );
+
+  allConn.forEach((clConn) => {
+    if (game.players.some((p: Player) => p.index === clConn.id)) {
+      clConn.send(
+        JSON.stringify({
+          type: "player_joined",
+          data: {
+            playerName: player.name,
+            playerCount: updatedGame.players.length,
+          },
+          id: 0,
+        }),
+      );
+    }
+
+    if (updatedGame.players.some((p: Player) => p.index === clConn.id)) {
+      clConn.send(
+        JSON.stringify({
+          type: "update_players",
+          data: updatedGame.players,
+          id: 0,
+        }),
+      );
+    }
+  });
+};
