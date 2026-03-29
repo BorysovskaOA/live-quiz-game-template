@@ -1,7 +1,9 @@
 import { completeQuestion } from "./completeQuestion";
-import gameState from "./gameState";
-import { ExtendedWebSocket, Game, Player } from "./types";
-import { formatQuestion } from "./utils/formatQuestion";
+import gameState from "../states/gameState";
+import { ExtendedWebSocket, Game, Player } from "../types";
+import { broadcastAllGameParticipants } from "../utils/broadcastAllGameParticipants";
+import { formatQuestion } from "../utils/formatQuestion";
+import { SECOND } from "../constants";
 
 export const nextQuestion = (
   gameId: string,
@@ -19,22 +21,23 @@ export const nextQuestion = (
       () => {
         completeQuestion(gameId, allConn);
       },
-      game.questions[game.currentQuestion + 1].timeLimitSec,
+      game.questions[game.currentQuestion + 1].timeLimitSec * SECOND,
     ),
   };
 
   const updatedGame = gameState.update(game.id, newGame);
 
-  allConn.forEach((client) => {
-    const clWs = client as ExtendedWebSocket;
-    if (updatedGame.players.some((p: Player) => p.index === clWs.id)) {
-      client.send(
+  broadcastAllGameParticipants(
+    updatedGame,
+    allConn,
+    (clConn: ExtendedWebSocket) => {
+      clConn.send(
         JSON.stringify({
           type: "question",
           data: formatQuestion(newGame),
           id: 0,
         }),
       );
-    }
-  });
+    },
+  );
 };

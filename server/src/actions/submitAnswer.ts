@@ -1,6 +1,8 @@
 import { completeQuestion } from "./completeQuestion";
-import gameState from "./gameState";
-import { AnswerData, ExtendedWebSocket, Game } from "./types";
+import gameState from "../states/gameState";
+import { AnswerData, ExtendedWebSocket, Game } from "../types";
+import { getCurrentGameQuestion } from "../utils/getCurrentGameQuestion";
+import { SECOND } from "../constants";
 
 export const handleSubmitAnswer = (
   { gameId, questionIndex, answerIndex }: AnswerData,
@@ -13,9 +15,11 @@ export const handleSubmitAnswer = (
     throw new Error("Invalid questionStartDate");
   }
 
-  const timeRemaining = Math.abs(
+  const timeDiff = Math.abs(
     new Date().getTime() - game.questionStartTime.getTime(),
   );
+  const timeRemaining =
+    getCurrentGameQuestion(game).timeLimitSec * SECOND - timeDiff;
   const newGame: Game = {
     ...game,
     playerAnswers: new Map(game.playerAnswers).set(conn.id, {

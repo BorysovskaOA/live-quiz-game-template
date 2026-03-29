@@ -1,5 +1,5 @@
-import { RegData, ExtendedWebSocket } from "./types.js";
-import registeredClientsState from "./registeredClientsState.js";
+import { RegData, ExtendedWebSocket } from "../types.js";
+import registeredClientsState from "../states/registeredClientsState.js";
 
 export const handleClientRegistration = (
   data: RegData,

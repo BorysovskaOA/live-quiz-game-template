@@ -1,10 +1,11 @@
 import crypto from "node:crypto";
 import { WebSocketServer, WebSocket } from "ws";
 import { ExtendedWebSocket } from "./types";
-import { handleClientRegistration } from "./registerClients";
-import { handleCreateGame } from "./createGame";
-import { handleJoinGame } from "./joinGame";
-import { handleSubmitAnswer } from "./submitAnswer";
+import { handleClientRegistration } from "./actions/registerClients";
+import { handleCreateGame } from "./actions/createGame";
+import { handleJoinGame } from "./actions/joinGame";
+import { handleSubmitAnswer } from "./actions/submitAnswer";
+import { handleStartGame } from "./actions/startGame";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -24,9 +25,9 @@ const getHandlerFn = (type: string) => {
       return handleJoinGame;
     }
     case "start_game": {
-      return handleCreateGame;
+      return handleStartGame;
     }
-    case "submit_answer": {
+    case "answer": {
       return handleSubmitAnswer;
     }
   }

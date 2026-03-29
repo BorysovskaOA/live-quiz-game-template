@@ -1,5 +1,5 @@
 import { nextQuestion } from "./nextQuestion";
-import { ExtendedWebSocket, StartGameData } from "./types";
+import { ExtendedWebSocket, StartGameData } from "../types";
 
 export const handleStartGame = (
   { gameId }: StartGameData,

@@ -1,4 +1,5 @@
-import gameState from "../gameState";
+import { SECOND } from "../constants";
+import gameState from "../states/gameState";
 import { Player, PlayerResult } from "../types";
 
 const BASE_POINTS = 1000;
@@ -13,10 +14,20 @@ export const updateGameScores = (gameId: string) => {
   game.players.forEach((p) => {
     const playerAnswer = game.playerAnswers.get(p.index);
     const isCorrectAnswer = correctIndex === playerAnswer?.answerIndex;
+    console.log(
+      playerAnswer?.timeRemaining,
+      game.questions[game.currentQuestion].timeLimitSec,
+    );
+    console.log(
+      playerAnswer?.timeRemaining,
+      game.questions[game.currentQuestion].timeLimitSec * SECOND,
+    );
     const pointsEarned = isCorrectAnswer
-      ? BASE_POINTS *
-        (playerAnswer.timeRemaining /
-          game.questions[game.currentQuestion].timeLimitSec)
+      ? Math.round(
+          BASE_POINTS *
+            (playerAnswer.timeRemaining /
+              (game.questions[game.currentQuestion].timeLimitSec * SECOND)),
+        )
       : 0;
 
     updatedPlayers.push({

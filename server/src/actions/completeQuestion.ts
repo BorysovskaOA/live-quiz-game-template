@@ -1,7 +1,8 @@
 import { finishGame } from "./finishGame";
 import { nextQuestion } from "./nextQuestion";
-import { ExtendedWebSocket, Player } from "./types";
-import { updateGameScores } from "./utils/updateGameScores";
+import { ExtendedWebSocket } from "../types";
+import { broadcastAllGameParticipants } from "../utils/broadcastAllGameParticipants";
+import { updateGameScores } from "../utils/updateGameScores";
 
 export const completeQuestion = (
   gameId: string,
@@ -12,8 +13,10 @@ export const completeQuestion = (
   if (updatedGame.currentQuestion === updatedGame.questions.length - 1) {
     finishGame(gameId, allConn);
   } else {
-    allConn.forEach((clConn) => {
-      if (updatedGame.players.some((p: Player) => p.index === clConn.id)) {
+    broadcastAllGameParticipants(
+      updatedGame,
+      allConn,
+      (clConn: ExtendedWebSocket) => {
         clConn.send(
           JSON.stringify({
             type: "question_result",
@@ -25,8 +28,8 @@ export const completeQuestion = (
             id: 0,
           }),
         );
-      }
-    });
+      },
+    );
 
     nextQuestion(gameId, allConn);
   }

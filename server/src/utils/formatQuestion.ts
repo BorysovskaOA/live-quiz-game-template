@@ -2,7 +2,7 @@ import { Game } from "../types";
 
 export const formatQuestion = (game: Game) => {
   return {
-    questionNumber: game.currentQuestion,
+    questionNumber: game.currentQuestion + 1,
     totalQuestions: game.questions.length,
     text: game.questions[game.currentQuestion].text,
     options: game.questions[game.currentQuestion].options,

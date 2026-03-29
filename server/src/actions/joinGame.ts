@@ -1,6 +1,7 @@
-import { JoinGameData, ExtendedWebSocket, Player } from "./types";
-import registeredClientsState from "./registeredClientsState.js";
-import gameState from "./gameState";
+import { JoinGameData, ExtendedWebSocket, Player } from "../types";
+import registeredClientsState from "../states/registeredClientsState.js";
+import gameState from "../states/gameState";
+import { broadcastAllGameParticipants } from "../utils/broadcastAllGameParticipants";
 
 export const handleJoinGame = (
   { code }: JoinGameData,
@@ -31,8 +32,10 @@ export const handleJoinGame = (
     }),
   );
 
-  allConn.forEach((clConn) => {
-    if (game.players.some((p: Player) => p.index === clConn.id)) {
+  broadcastAllGameParticipants(
+    updatedGame,
+    allConn,
+    (clConn: ExtendedWebSocket) => {
       clConn.send(
         JSON.stringify({
           type: "player_joined",
@@ -43,9 +46,7 @@ export const handleJoinGame = (
           id: 0,
         }),
       );
-    }
 
-    if (updatedGame.players.some((p: Player) => p.index === clConn.id)) {
       clConn.send(
         JSON.stringify({
           type: "update_players",
@@ -53,6 +54,6 @@ export const handleJoinGame = (
           id: 0,
         }),
       );
-    }
-  });
+    },
+  );
 };

@@ -1,4 +1,4 @@
-import { RegisteredClient } from "./types";
+import { RegisteredClient } from "../types";
 
 const registeredClients: RegisteredClient[] = [];
 

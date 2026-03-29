@@ -1,6 +1,6 @@
-import { Game, CreateGameData, ExtendedWebSocket } from "./types";
-import gameState from "./gameState";
-import { generateGameCode } from "./utils/generateGameCode";
+import { Game, CreateGameData, ExtendedWebSocket } from "../types";
+import gameState from "../states/gameState";
+import { generateGameCode } from "../utils/generateGameCode";
 
 export const handleCreateGame = (
   { questions }: CreateGameData,
