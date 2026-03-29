@@ -1,3 +1,10 @@
+import crypto from "node:crypto";
+
 export const generateGameCode = () => {
-  return Math.round(Math.random() * 1000000).toString();
+  return crypto
+    .randomBytes(6)
+    .toString("base64")
+    .replace(/[/+=]/g, "")
+    .substring(0, 6)
+    .toUpperCase();
 };

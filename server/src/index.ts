@@ -6,10 +6,9 @@ import { handleCreateGame } from "./actions/createGame";
 import { handleJoinGame } from "./actions/joinGame";
 import { handleSubmitAnswer } from "./actions/submitAnswer";
 import { handleStartGame } from "./actions/startGame";
+import { disconnectConnection } from "./actions/disconnectConnection";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
-
-const connections: ExtendedWebSocket[] = [];
 
 const wss = new WebSocketServer({ port: PORT });
 
@@ -38,11 +37,13 @@ wss.on("connection", (ws: WebSocket) => {
 
   const id = crypto.randomUUID();
   extWs.id = id;
-  connections.push(extWs);
 
   extWs.on("close", () => {
-    const index = connections.findIndex((s) => s.id === id);
-    connections.splice(index, 1);
+    disconnectConnection(extWs, wss.clients as Set<ExtendedWebSocket>);
+  });
+
+  ws.on("error", (error) => {
+    console.error("Socket error:", error);
   });
 
   extWs.on("message", (message) => {
@@ -61,7 +62,7 @@ wss.on("connection", (ws: WebSocket) => {
         JSON.stringify({
           type: "error",
           data: {
-            messge: error.message,
+            message: error.message,
           },
           id: 0,
         }),

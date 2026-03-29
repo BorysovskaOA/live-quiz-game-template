@@ -6,6 +6,18 @@ export const handleCreateGame = (
   { questions }: CreateGameData,
   conn: ExtendedWebSocket,
 ) => {
+  if (
+    questions.some(
+      (q) =>
+        q.options.length !== 4 ||
+        q.correctIndex > 4 ||
+        q.correctIndex < 0 ||
+        q.timeLimitSec < 1, // At least one second to be able to answer
+    )
+  ) {
+    throw new Error("Invalid input");
+  }
+
   const game: Game = {
     id: crypto.randomUUID(),
     code: generateGameCode(),

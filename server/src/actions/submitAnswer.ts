@@ -10,6 +10,14 @@ export const handleSubmitAnswer = (
   allConn: Set<ExtendedWebSocket>,
 ) => {
   const game = gameState.getById(gameId);
+  if (
+    game.playerAnswers.has(conn.id) ||
+    game.currentQuestion !== questionIndex ||
+    answerIndex < 0 ||
+    answerIndex > 4
+  ) {
+    throw new Error("Invalid input");
+  }
 
   if (!game.questionStartTime) {
     throw new Error("Invalid questionStartDate");
@@ -40,7 +48,7 @@ export const handleSubmitAnswer = (
     }),
   );
 
-  if (updatedGame.questions.length === updatedGame.playerAnswers.size) {
+  if (updatedGame.players.length === updatedGame.playerAnswers.size) {
     clearTimeout(updatedGame.questionTimer);
     completeQuestion(gameId, allConn);
   }
