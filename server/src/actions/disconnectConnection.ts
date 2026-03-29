@@ -43,8 +43,17 @@ const disconnectAllActiveGamePlayers = (
       );
     });
 
-    // If all other answered
+    console.log(game.status);
+
+    if (game.status === "waiting") {
+      return;
+    }
+
+    console.log(game.players.length, game.playerAnswers.size);
+
+    // If all other answered in game in progress
     if (game.players.length === game.playerAnswers.size) {
+      console.log(game.players, game.playerAnswers.size);
       if (game.questionTimer) {
         clearTimeout(game.questionTimer);
       }
@@ -54,25 +63,25 @@ const disconnectAllActiveGamePlayers = (
         return;
       }
 
-      // No more players in the game
+      // No more players in the game a
       gameState.update(game.id, {
         ...game,
         status: "finished",
       });
 
-      const hostConn = Array.from(allConn).find(
-        (clConn) => clConn.id === game.hostId,
-      );
-
-      hostConn?.send(
-        JSON.stringify({
-          type: "error",
-          data: {
-            message: "All players disconnected",
-          },
-          id: 0,
-        }),
-      );
+      allConn.forEach((clConn) => {
+        if (clConn.id === game.hostId) {
+          clConn.send(
+            JSON.stringify({
+              type: "error",
+              data: {
+                message: "All players disconnected",
+              },
+              id: 0,
+            }),
+          );
+        }
+      });
     }
   });
 };

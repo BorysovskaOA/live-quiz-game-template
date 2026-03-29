@@ -11,6 +11,10 @@ export const handleJoinGame = (
   const registeredClient = registeredClientsState.getByConnectionId(conn.id);
   const game = gameState.getByCode(code);
 
+  if (game.status !== "waiting") {
+    throw new Error("Invalid input");
+  }
+
   const player: Player = {
     name: registeredClient.name,
     index: conn.id,
