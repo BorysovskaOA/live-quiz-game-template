@@ -14,14 +14,6 @@ export const updateGameScores = (gameId: string) => {
   game.players.forEach((p) => {
     const playerAnswer = game.playerAnswers.get(p.index);
     const isCorrectAnswer = correctIndex === playerAnswer?.answerIndex;
-    console.log(
-      playerAnswer?.timeRemaining,
-      game.questions[game.currentQuestion].timeLimitSec,
-    );
-    console.log(
-      playerAnswer?.timeRemaining,
-      game.questions[game.currentQuestion].timeLimitSec * SECOND,
-    );
     const pointsEarned = isCorrectAnswer
       ? Math.round(
           BASE_POINTS *
